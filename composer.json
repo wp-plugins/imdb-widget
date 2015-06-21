@@ -1,0 +1,5 @@
+{
+  "require": {
+    "refactors/smart-scraper": "dev-master"
+  }
+}
