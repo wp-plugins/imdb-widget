@@ -3,7 +3,7 @@
 /**
  * Plugin Name: IMDb Profile Widget
  * Description: This is a plugin that shows your IMDd profile with a simple widget.
- * Version: 1.0.3
+ * Version: 1.0.4
  * Author: Henrique Dias and Luís Soares (Refactors)
  * Author URI: https://github.com/refactors
  * Network: true
@@ -35,7 +35,7 @@ require_once( 'vendor/autoload.php' );
 use SmartScraper\Parser;
 
 // prevent direct file access
-if ( !defined( 'ABSPATH' ) ) {
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
@@ -46,70 +46,71 @@ if ( version_compare( PHP_VERSION, '5.6.0', '<' ) ) {
 
 class IMDb_Widget extends WP_Widget {
 
-	protected $widget_slug	 = 'imdb-widget';
-	protected $options		 = array(
+	protected $widget_slug = 'imdb-widget';
+	protected $options = array(
 		"title",
 		"userId"
 	);
 	protected $config;
-	protected $optionsShow = array('bio', 'member since', 'picture', 'badges', 'watchlist', 'lists', 'ratings', 'reviews', 'boards');
+	protected $optionsShow = array(
+		'bio',
+		'member since',
+		'picture',
+		'badges',
+		'watchlist',
+		'lists',
+		'ratings',
+		'reviews',
+		'boards'
+	);
 
-	public function __construct()
-	{
+	public function __construct() {
 		parent::__construct(
-		$this->get_widget_slug(), __( 'IMDb Widget', $this->get_widget_slug() ), array(
-			'classname'		 => $this->get_widget_slug() . '-class',
-			'description'	 => __( 'A widget to show a small version of your IMDb profile.', $this->get_widget_slug() )
-		)
+			$this->get_widget_slug(), __( 'IMDb Profile ', $this->get_widget_slug() ), array(
+				'classname'   => $this->get_widget_slug() . '-class',
+				'description' => __( 'A widget to show a small version of your IMDb profile.', $this->get_widget_slug() )
+			)
 		);
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'register_widget_styles' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'register_widget_scripts' ) );
 	}
 
-	public function get_widget_slug()
-	{
+	public function get_widget_slug() {
 		return $this->widget_slug;
 	}
 
-	public function form( $config )
-	{
-		$config = !empty( $config ) ? unserialize( $config ) : array();
+	public function form( $config ) {
+		$config = ! empty( $config ) ? unserialize( $config ) : array();
 
-		foreach ($config as $key => $value) { // recover options
-			${$key} = esc_attr($value);
+		foreach ( $config as $key => $value ) { // recover options
+			${$key} = esc_attr( $value );
 		}
 
-		ob_start( "IMDB_HTMLCompressor" );
+		ob_start( "refactors_HTMLCompressor" );
 		require 'views/options.php';
 		ob_end_flush();
 	}
 
-	public function update( $new_instance, $old_instance )
-	{
+	public function update( $new_instance, $old_instance ) {
 		return serialize( $new_instance );
 	}
 
-	public function widget( $args, $config )
-	{
+	public function widget( $args, $config ) {
 		extract( $args, EXTR_SKIP );
-		$config = !empty( $config ) ? unserialize( $config ) : array();
+		$config = ! empty( $config ) ? unserialize( $config ) : array();
 
-		ob_start( "IMDB_HTMLCompressor" );
+		ob_start( "refactors_HTMLCompressor" );
 
-		if ( !isset( $config[ 'userId' ] ) ) {
+		if ( ! isset( $config['userId'] ) ) {
 			echo 'You need to first configure the plugin :)';
 		} else {
-			$info = $this->get_info( $config[ 'userId' ] );
+			$info = $this->get_info( $config['userId'] );
 			require 'views/widget.php';
 		}
 
 		ob_end_flush();
 	}
-
-        private function serveImage($imageUrl) {
-            return plugins_url( 'pic.php', __FILE__ ) . '?url=' . $imageUrl;
-        }
 
 	private function get_info( $userId ) {
 		$info          = new Parser( 'http://www.imdb.com/' . 'user/' . $userId . '/' );
@@ -195,17 +196,19 @@ class IMDb_Widget extends WP_Widget {
 	}
 
 	public function isChecked( $conf, $name ) {
-	   return isset($conf[$name]) && $conf[$name] == 'on';
+		return isset( $conf[ $name ] ) && $conf[ $name ] == 'on';
 	}
 
-	public function register_widget_styles()
-	{
+	public function register_widget_styles() {
 		wp_enqueue_style( $this->get_widget_slug() . '-widget-styles', plugins_url( 'css/widget.css', __FILE__ ) );
 	}
 
-	public function register_widget_scripts()
-	{
-		wp_enqueue_script( $this->get_widget_slug() . '-script', plugins_url( 'js/widget.js', __FILE__ ), array( 'jquery' ) );
+	public function register_widget_scripts() {
+		wp_enqueue_script( $this->get_widget_slug() . '-script', plugins_url( 'js/widget.js', __FILE__ ), array( 'jquery' ), null, true );
+	}
+
+	private function serveImage( $imageUrl ) {
+		return plugins_url( 'pic.php', __FILE__ ) . '?url=' . $imageUrl;
 	}
 
 }
