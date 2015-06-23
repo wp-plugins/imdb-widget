@@ -3,7 +3,7 @@
 /**
  * Plugin Name: IMDb Profile Widget
  * Description: This is a plugin that shows your IMDd profile with a simple widget.
- * Version: 1.0.4
+ * Version: 1.0.5
  * Author: Henrique Dias and Luís Soares (Refactors)
  * Author URI: https://github.com/refactors
  * Network: true
@@ -200,7 +200,8 @@ class IMDb_Widget extends WP_Widget {
 	}
 
 	public function register_widget_styles() {
-		wp_enqueue_style( $this->get_widget_slug() . '-widget-styles', plugins_url( 'css/widget.css', __FILE__ ) );
+		wp_enqueue_style( $this->get_widget_slug() . '-common-styles', plugins_url( 'css/common.css', __FILE__ ) );
+        wp_enqueue_style( $this->get_widget_slug() . '-widget-styles', plugins_url( 'css/widget.css', __FILE__ ) );
 	}
 
 	public function register_widget_scripts() {
